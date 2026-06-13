@@ -18,9 +18,9 @@ const AnimatedG        = Animated.createAnimatedComponent(G);
 
 type Nav = StackNavigationProp<RootStackParamList, 'Login'>;
 
-const ACCENT = '#8b5cf6';
-const ACCENT_LIGHT = '#ede9fe';
-const BG = '#faf5ff';
+const ACCENT = '#38bdf8';
+const ACCENT_LIGHT = '#e0f2fe';
+const BG = '#f0f9ff';
 
 // ── Animated stock chart logo — memo لمنع إعادة الرسم ────────────────────
 const StockLogo = React.memo(function StockLogo() {
@@ -105,10 +105,10 @@ function Field({
   const inputAlign = dir === 'rtl' ? 'right' : 'left';
   const labelAlign = dir === 'rtl' ? 'left' : 'right';
 
-  const bgFocused   = dark ? '#2a1f42' : '#fff';
-  const bgUnfocused = dark ? '#1e1530' : '#f3eeff';
-  const textColor   = dark ? '#d8b4fe' : '#6d28d9';
-  const labelColor  = dark ? '#6d5fa0' : '#94a3b8';
+  const bgFocused   = dark ? '#0c2a40' : '#fff';
+  const bgUnfocused = dark ? '#0e2233' : '#e0f2fe';
+  const textColor   = dark ? '#7dd3fc' : '#0369a1';
+  const labelColor  = dark ? '#2e6a8a' : '#64748b';
 
   return (
     <View style={f.wrap}>
@@ -127,7 +127,7 @@ function Field({
           value={value}
           onChangeText={onChange}
           placeholder={placeholder}
-          placeholderTextColor={dark ? '#4a3870' : '#c4b5fd'}
+          placeholderTextColor={dark ? '#1e5a7a' : '#7dd3fc'}
           secureTextEntry={secure}
           autoCapitalize="none"
           onFocus={onFocus}
@@ -198,10 +198,10 @@ export default function LoginScreen() {
 
   const dir = isAr ? 'rtl' : 'ltr';
 
-  const rootBg   = isDark ? '#0d0a17' : BG;
-  const cardBg   = isDark ? '#1a1330' : '#fff';
-  const titleC   = isDark ? '#e9d5ff' : '#1e1b4b';
-  const dividerC = isDark ? 'rgba(139,92,246,0.2)' : ACCENT_LIGHT;
+  const rootBg   = isDark ? '#07111a' : BG;
+  const cardBg   = isDark ? '#0d1f2d' : '#fff';
+  const titleC   = isDark ? '#bae6fd' : '#0c4a6e';
+  const dividerC = isDark ? 'rgba(56,189,248,0.2)' : ACCENT_LIGHT;
 
   return (
     <View style={[s.root, { backgroundColor: rootBg }]}>
@@ -323,8 +323,8 @@ const s = StyleSheet.create({
     shadowRadius: 32,
     elevation: 12,
   },
-  title:   { fontSize: 20, fontWeight: '800', color: '#1e1b4b', textAlign: 'center', marginTop: 4 },
-  sub:     { fontSize: 12, color: '#a78bfa', textAlign: 'center', marginTop: 3, marginBottom: 6 },
+  title:   { fontSize: 20, fontWeight: '800', color: '#0c4a6e', textAlign: 'center', marginTop: 4 },
+  sub:     { fontSize: 12, color: '#38bdf8', textAlign: 'center', marginTop: 3, marginBottom: 6 },
   divider: { height: 1, backgroundColor: ACCENT_LIGHT, marginVertical: 20 },
   btn: {
     marginTop: 12,
