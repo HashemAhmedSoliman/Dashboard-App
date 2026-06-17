@@ -12,7 +12,7 @@ import { GetNetPurchasesPopupDetails } from '../api/dashboardService';
 import { PopupAccents } from '../constants/colors';
 
 const { primary: ACCENT, dark: ACCENT_DARK } = PopupAccents.purchases;
-const cache = new Map<number, any>();
+const cache = new Map<string, any>();
 
 export default function PurchasesPopup({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const { t } = useTranslation();
@@ -23,10 +23,11 @@ export default function PurchasesPopup({ visible, onClose }: { visible: boolean;
 
   useEffect(() => {
     if (!visible) return;
-    if (cache.has(selectedPeriod)) { setData(cache.get(selectedPeriod)); buildTrend(cache.get(selectedPeriod)); return; }
+    const ck = `${subsidiaryID}-${selectedPeriod}`;
+    if (cache.has(ck)) { setData(cache.get(ck)); buildTrend(cache.get(ck)); return; }
     setLoading(true);
     GetNetPurchasesPopupDetails({ SubsidiaryID: subsidiaryID, FilterType: selectedPeriod })
-      .then((d) => { cache.set(selectedPeriod, d); setData(d); buildTrend(d); })
+      .then((d) => { cache.set(ck, d); setData(d); buildTrend(d); })
       .catch(() => {}).finally(() => setLoading(false));
   }, [visible, selectedPeriod]);
 

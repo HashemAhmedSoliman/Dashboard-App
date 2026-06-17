@@ -8,7 +8,7 @@ import { GetInventoryDashboardCurrentMonth, GetInventoryMovementLast7Days } from
 import { CardAccents } from '../../constants/colors';
 
 const ACCENT = CardAccents.inventory;
-const movementCache = new Map<number, any>();
+const movementCache = new Map<string, any>();
 
 export default function InventoryCard({ onPress }: { onPress: () => void }) {
   const { t } = useTranslation();
@@ -37,14 +37,15 @@ export default function InventoryCard({ onPress }: { onPress: () => void }) {
       setLoading(false);
     }).catch(() => { if (!isStale(token)) setLoading(false); });
 
-    if (movementCache.has(selectedPeriod)) {
-      applyMovement(movementCache.get(selectedPeriod)); return;
+    const ck = `${subsidiaryID}-${selectedPeriod}`;
+    if (movementCache.has(ck)) {
+      applyMovement(movementCache.get(ck)); return;
     }
 
     GetInventoryMovementLast7Days(filter).then((d) => {
       if (isStale(token)) return;
       const rows = Array.isArray(d) ? d : [];
-      movementCache.set(selectedPeriod, rows);
+      movementCache.set(ck, rows);
       applyMovement(rows);
     }).catch(() => {});
   }, [subsidiaryID, selectedPeriod, loadToken]);

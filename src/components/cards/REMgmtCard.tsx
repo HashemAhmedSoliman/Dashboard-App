@@ -9,7 +9,7 @@ import { GetRealEstateMgmtDashboard } from '../../api/dashboardService';
 import { CardAccents } from '../../constants/colors';
 
 const ACCENT = CardAccents.reMgmt;
-const cache = new Map<number, any>();
+const cache = new Map<string, any>();
 
 export default function REMgmtCard({ onPress }: { onPress: () => void }) {
   const { t } = useTranslation();
@@ -30,11 +30,12 @@ export default function REMgmtCard({ onPress }: { onPress: () => void }) {
   useEffect(() => {
     const token  = loadToken;
     const filter = { SubsidiaryID: subsidiaryID, FilterType: selectedPeriod };
-    if (cache.has(selectedPeriod)) { apply(cache.get(selectedPeriod)); return; }
+    const ck = `${subsidiaryID}-${selectedPeriod}`;
+    if (cache.has(ck)) { apply(cache.get(ck)); return; }
     setLoading(true);
     GetRealEstateMgmtDashboard(filter).then((d) => {
       if (isStale(token)) return;
-      cache.set(selectedPeriod, d);
+      cache.set(ck, d);
       apply(d);
     }).catch(() => {}).finally(() => { if (!isStale(token)) setLoading(false); });
   }, [subsidiaryID, selectedPeriod, loadToken]);

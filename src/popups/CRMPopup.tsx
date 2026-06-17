@@ -12,7 +12,7 @@ import { GetCRMDashboardPopup } from '../api/dashboardService';
 import { PopupAccents } from '../constants/colors';
 
 const { primary: ACCENT, dark: ACCENT_DARK } = PopupAccents.crm;
-const cache = new Map<number, any>();
+const cache = new Map<string, any>();
 
 export default function CRMPopup({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const { t } = useTranslation();
@@ -23,10 +23,11 @@ export default function CRMPopup({ visible, onClose }: { visible: boolean; onClo
 
   useEffect(() => {
     if (!visible) return;
-    if (cache.has(selectedPeriod)) { apply(cache.get(selectedPeriod)); return; }
+    const ck = `${subsidiaryID}-${selectedPeriod}`;
+    if (cache.has(ck)) { apply(cache.get(ck)); return; }
     setLoading(true);
     GetCRMDashboardPopup({ SubsidiaryID: subsidiaryID, FilterType: selectedPeriod })
-      .then((d) => { cache.set(selectedPeriod, d); apply(d); })
+      .then((d) => { cache.set(ck, d); apply(d); })
       .catch(() => {}).finally(() => setLoading(false));
   }, [visible, selectedPeriod]);
 

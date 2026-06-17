@@ -9,8 +9,8 @@ import { GetHRDashboard, GetHRDashboardPayroll } from '../../api/dashboardServic
 import { CardAccents } from '../../constants/colors';
 
 const ACCENT = CardAccents.hr; // #22c55e
-const cache        = new Map<number, any>();
-const payrollCache = new Map<number, number>();
+const cache        = new Map<string, any>();
+const payrollCache = new Map<string, number>();
 
 export default function HRCard({ onPress }: { onPress: () => void }) {
   const { t } = useTranslation();
@@ -36,26 +36,27 @@ export default function HRCard({ onPress }: { onPress: () => void }) {
     const token  = loadToken;
     const filter = { SubsidiaryID: subsidiaryID, FilterType: selectedPeriod };
 
-    if (cache.has(selectedPeriod)) {
-      apply(cache.get(selectedPeriod));
+    const ck = `${subsidiaryID}-${selectedPeriod}`;
+    if (cache.has(ck)) {
+      apply(cache.get(ck));
     } else {
       setLoading(true);
       GetHRDashboard(filter).then((d) => {
         if (isStale(token)) return;
-        cache.set(selectedPeriod, d);
+        cache.set(ck, d);
         apply(d);
       }).catch(() => {}).finally(() => { if (!isStale(token)) setLoading(false); });
     }
 
     // Payroll is a separate slow call
-    if (payrollCache.has(selectedPeriod)) {
-      setPayroll(payrollCache.get(selectedPeriod) ?? 0);
+    if (payrollCache.has(ck)) {
+      setPayroll(payrollCache.get(ck) ?? 0);
     } else {
       GetHRDashboardPayroll(filter).then((d) => {
         if (isStale(token)) return;
         const rows = Array.isArray(d) ? d : [];
         const total = rows.reduce((acc: number, r: any) => acc + n(r?.netpayroll ?? r?.NetPayroll), 0);
-        payrollCache.set(selectedPeriod, total);
+        payrollCache.set(ck, total);
         setPayroll(total);
       }).catch(() => {});
     }

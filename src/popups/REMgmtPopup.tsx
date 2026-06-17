@@ -12,7 +12,7 @@ import { GetRealEstateMgmtPopupDetails } from '../api/dashboardService';
 import { PopupAccents } from '../constants/colors';
 
 const { primary: ACCENT, dark: ACCENT_DARK } = PopupAccents.reMgmt;
-const cache = new Map<number, any>();
+const cache = new Map<string, any>();
 
 export default function REMgmtPopup({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const { t } = useTranslation();
@@ -26,10 +26,11 @@ export default function REMgmtPopup({ visible, onClose }: { visible: boolean; on
 
   useEffect(() => {
     if (!visible) return;
-    if (cache.has(selectedPeriod)) { apply(cache.get(selectedPeriod)); return; }
+    const ck = `${subsidiaryID}-${selectedPeriod}`;
+    if (cache.has(ck)) { apply(cache.get(ck)); return; }
     setLoading(true);
     GetRealEstateMgmtPopupDetails({ SubsidiaryID: subsidiaryID, FilterType: selectedPeriod })
-      .then((d) => { cache.set(selectedPeriod, d); apply(d); })
+      .then((d) => { cache.set(ck, d); apply(d); })
       .catch(() => {}).finally(() => setLoading(false));
   }, [visible, selectedPeriod]);
 

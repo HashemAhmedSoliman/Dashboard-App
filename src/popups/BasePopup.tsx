@@ -1,5 +1,5 @@
 // Base popup shell — full-screen modal, matches mgr-popup--v2 in SCSS
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   View, Text, TouchableOpacity, ScrollView,
   StyleSheet, Modal, SafeAreaView, ActivityIndicator,
@@ -26,6 +26,13 @@ export default function BasePopup({
 }: Props) {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const scrollRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    if (visible) {
+      setTimeout(() => scrollRef.current?.scrollTo({ y: 0, animated: false }), 50);
+    }
+  }, [visible]);
 
   return (
     <Modal
@@ -74,6 +81,7 @@ export default function BasePopup({
           </View>
         ) : (
           <ScrollView
+            ref={scrollRef}
             style={{ flex: 1 }}
             contentContainerStyle={s.body}
             showsVerticalScrollIndicator={false}

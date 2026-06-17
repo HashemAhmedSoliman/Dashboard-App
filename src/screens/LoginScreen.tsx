@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, ActivityIndicator, Alert,
-  KeyboardAvoidingView, Platform, Animated, Image,
+  KeyboardAvoidingView, Platform, Animated, Image, ScrollView,
 } from 'react-native';
 import Svg, { Rect, Polyline, G } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
@@ -224,9 +224,15 @@ export default function LoginScreen() {
       </TouchableOpacity>
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={s.inner}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
+        <ScrollView
+          contentContainerStyle={s.scroll}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
         <Animated.View style={[s.card, {
           backgroundColor: cardBg,
           transform: [{ translateY: cardY }],
@@ -277,6 +283,7 @@ export default function LoginScreen() {
             }
           </TouchableOpacity>
         </Animated.View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </View>
   );
@@ -284,7 +291,8 @@ export default function LoginScreen() {
 
 const s = StyleSheet.create({
   root:  { flex: 1, backgroundColor: BG },
-  inner: { flex: 1, justifyContent: 'center', padding: 24 },
+  inner: { flex: 1 },
+  scroll: { flexGrow: 1, justifyContent: 'center', padding: 24 },
   bgLogo: {
     position: 'absolute',
     width: 320, height: 320,

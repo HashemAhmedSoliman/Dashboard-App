@@ -6,10 +6,11 @@ import { useTheme } from '../../context/ThemeContext';
 const W = Dimensions.get('window').width;
 
 interface LineProps {
-  data:    { value: number; label?: string }[];
-  color:   string;
-  fill?:   boolean;
-  height?: number;
+  data:        { value: number; label?: string }[];
+  color:       string;
+  fill?:       boolean;
+  height?:     number;
+  showLabels?: boolean;
 }
 
 interface BarProps {
@@ -19,28 +20,44 @@ interface BarProps {
   width?:  number;
 }
 
-export function SparkLine({ data, color, fill = true, height = 60 }: LineProps) {
+export function SparkLine({ data, color, fill = true, height = 60, showLabels = false }: LineProps) {
   const { colors } = useTheme();
 
   if (!data?.length) return <View style={{ height }} />;
+
+  const maxVal = Math.max(...data.map((d) => d.value), 1);
+
+  const formatYLabel = (v: string) => {
+    const n = parseFloat(v);
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+    if (n >= 1_000)     return `${(n / 1_000).toFixed(0)}K`;
+    return `${Math.round(n)}`;
+  };
 
   return (
     <LineChart
       data={data}
       height={height}
-      width={(W - 80)}
+      width={showLabels ? W - 120 : W - 80}
       color={color}
       thickness={2}
       hideDataPoints={false}
       dataPointsColor={color}
-      dataPointsRadius={3}
+      dataPointsRadius={showLabels ? 4 : 3}
       startFillColor={fill ? color + '55' : 'transparent'}
       endFillColor={fill ? color + '00' : 'transparent'}
       startOpacity={fill ? 0.4 : 0}
       endOpacity={fill ? 0 : 0}
       areaChart={fill}
-      hideYAxisText
-      hideAxesAndRules
+      hideYAxisText={!showLabels}
+      hideAxesAndRules={!showLabels}
+      yAxisTextStyle={{ color: colors.textMuted, fontSize: 10 }}
+      xAxisLabelTextStyle={{ color: colors.textMuted, fontSize: 9 }}
+      yAxisColor={colors.rowBorder}
+      xAxisColor={colors.rowBorder}
+      noOfSections={4}
+      maxValue={maxVal * 1.15}
+      formatYLabel={showLabels ? formatYLabel : undefined}
       curved
       animateOnDataChange
       animationDuration={300}
@@ -49,7 +66,7 @@ export function SparkLine({ data, color, fill = true, height = 60 }: LineProps) 
 }
 
 export function SparkBar({ data, color, height = 60, width }: BarProps) {
-  const { colors } = useTheme();
+  useTheme();
 
   if (!data?.length) return <View style={{ height }} />;
 

@@ -8,8 +8,8 @@ import { GetAssetsSummary, GetAssetsDepreciationTrend } from '../../api/dashboar
 import { CardAccents } from '../../constants/colors';
 
 const ACCENT = CardAccents.assets;
-const summaryCache = new Map<number, any>();
-const trendCache   = new Map<number, any>();
+const summaryCache = new Map<string, any>();
+const trendCache   = new Map<string, any>();
 
 export default function AssetsCard({ onPress }: { onPress: () => void }) {
   const { t } = useTranslation();
@@ -42,9 +42,10 @@ export default function AssetsCard({ onPress }: { onPress: () => void }) {
     const token  = loadToken;
     const filter = { SubsidiaryID: subsidiaryID, FilterType: selectedPeriod };
 
-    if (summaryCache.has(selectedPeriod) && trendCache.has(selectedPeriod)) {
-      applySum(summaryCache.get(selectedPeriod));
-      applyTrend(trendCache.get(selectedPeriod));
+    const ck = `${subsidiaryID}-${selectedPeriod}`;
+    if (summaryCache.has(ck) && trendCache.has(ck)) {
+      applySum(summaryCache.get(ck));
+      applyTrend(trendCache.get(ck));
       return;
     }
 
@@ -55,14 +56,14 @@ export default function AssetsCard({ onPress }: { onPress: () => void }) {
     GetAssetsSummary(filter).then((d) => {
       if (isStale(token)) return;
       const row = Array.isArray(d) ? d[0] : d;
-      summaryCache.set(selectedPeriod, row);
+      summaryCache.set(ck, row);
       applySum(row);
     }).catch(() => {}).finally(done);
 
     GetAssetsDepreciationTrend(filter).then((d) => {
       if (isStale(token)) return;
       const rows = Array.isArray(d) ? d : [];
-      trendCache.set(selectedPeriod, rows);
+      trendCache.set(ck, rows);
       applyTrend(rows);
     }).catch(() => {}).finally(done);
   }, [subsidiaryID, selectedPeriod, loadToken]);

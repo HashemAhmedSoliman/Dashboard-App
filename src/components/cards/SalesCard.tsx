@@ -11,8 +11,8 @@ import { CardAccents } from '../../constants/colors';
 
 const ACCENT = CardAccents.sales;
 
-const summaryCache = new Map<number, any>();
-const trendCache   = new Map<number, any>();
+const summaryCache = new Map<string, any>();
+const trendCache   = new Map<string, any>();
 
 export default function SalesCard({ onPress }: { onPress: () => void }) {
   const { t } = useTranslation();
@@ -35,8 +35,9 @@ export default function SalesCard({ onPress }: { onPress: () => void }) {
     const token = loadToken;
     const filter = { SubsidiaryID: subsidiaryID, FilterType: selectedPeriod };
 
-    const cachedS = summaryCache.get(selectedPeriod);
-    const cachedT = trendCache.get(selectedPeriod);
+    const ck = `${subsidiaryID}-${selectedPeriod}`;
+    const cachedS = summaryCache.get(ck);
+    const cachedT = trendCache.get(ck);
     if (cachedS && cachedT) {
       applySum(cachedS); applyTrend(cachedT); return;
     }
@@ -46,14 +47,14 @@ export default function SalesCard({ onPress }: { onPress: () => void }) {
     GetNetSalesCurrentMonth(filter).then((d) => {
       if (isStale(token)) return;
       const row = Array.isArray(d) ? d[0] : d;
-      summaryCache.set(selectedPeriod, row);
+      summaryCache.set(ck, row);
       applySum(row);
     }).catch(() => {}).finally(() => { if (!isStale(token)) setLoading(false); });
 
     GetNetSalesLast7Days(filter).then((d) => {
       if (isStale(token)) return;
       const rows = Array.isArray(d) ? d : [];
-      trendCache.set(selectedPeriod, rows);
+      trendCache.set(ck, rows);
       applyTrend(rows);
     }).catch(() => {});
   }, [subsidiaryID, selectedPeriod, loadToken]);
