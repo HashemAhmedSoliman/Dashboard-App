@@ -36,25 +36,23 @@ export default function SalesCard({ onPress }: { onPress: () => void }) {
     const filter = { SubsidiaryID: subsidiaryID, FilterType: selectedPeriod };
 
     const ck = `${subsidiaryID}-${selectedPeriod}`;
-    const cachedS = summaryCache.get(ck);
-    const cachedT = trendCache.get(ck);
-    if (cachedS && cachedT) {
-      applySum(cachedS); applyTrend(cachedT); return;
+    if (summaryCache.has(ck) && trendCache.has(ck)) {
+      applySum(summaryCache.get(ck)); applyTrend(trendCache.get(ck)); return;
     }
 
     setLoading(true);
 
     GetNetSalesCurrentMonth(filter).then((d) => {
-      if (isStale(token)) return;
       const row = Array.isArray(d) ? d[0] : d;
       summaryCache.set(ck, row);
+      if (isStale(token)) return;
       applySum(row);
     }).catch(() => {}).finally(() => { if (!isStale(token)) setLoading(false); });
 
     GetNetSalesLast7Days(filter).then((d) => {
-      if (isStale(token)) return;
       const rows = Array.isArray(d) ? d : [];
       trendCache.set(ck, rows);
+      if (isStale(token)) return;
       applyTrend(rows);
     }).catch(() => {});
   }, [subsidiaryID, selectedPeriod, loadToken]);

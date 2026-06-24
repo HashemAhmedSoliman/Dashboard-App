@@ -45,16 +45,16 @@ export default function PurchasesCard({ onPress }: { onPress: () => void }) {
 
     setLoading(true);
     GetNetPurchasesCurrentMonth(filter).then((d) => {
-      if (isStale(token)) return;
       const row = Array.isArray(d) ? d[0] : d;
       summaryCache.set(ck, row);
+      if (isStale(token)) return;
       applySum(row);
     }).catch(() => {}).finally(() => { if (!isStale(token)) setLoading(false); });
 
     GetNetPurchasesLast7Days(filter).then((d) => {
-      if (isStale(token)) return;
       const rows = Array.isArray(d) ? d : [];
       trendCache.set(ck, rows);
+      if (isStale(token)) return;
       applyTrend(rows);
     }).catch(() => {});
   }, [subsidiaryID, selectedPeriod, loadToken]);

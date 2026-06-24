@@ -34,8 +34,8 @@ export default function REMgmtCard({ onPress }: { onPress: () => void }) {
     if (cache.has(ck)) { apply(cache.get(ck)); return; }
     setLoading(true);
     GetRealEstateMgmtDashboard(filter).then((d) => {
-      if (isStale(token)) return;
       cache.set(ck, d);
+      if (isStale(token)) return;
       apply(d);
     }).catch(() => {}).finally(() => { if (!isStale(token)) setLoading(false); });
   }, [subsidiaryID, selectedPeriod, loadToken]);

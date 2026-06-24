@@ -44,9 +44,9 @@ export default function TaxesCard({ onPress }: { onPress: () => void }) {
     }).catch(() => {}).finally(done);
 
     GetTaxesTrend(filter).then((d) => {
-      if (isStale(token)) return;
       const rows = Array.isArray(d) ? d : [];
       trendCache.set(ck, rows);
+      if (isStale(token)) return;
       applyTrend(rows);
     }).catch(() => {}).finally(done);
   }, [subsidiaryID, selectedPeriod, loadToken]);

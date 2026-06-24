@@ -38,8 +38,8 @@ export default function CRMCard({ onPress }: { onPress: () => void }) {
 
     setLoading(true);
     GetCRMDashboard(filter).then((d) => {
-      if (isStale(token)) return;
       cache.set(ck, d);
+      if (isStale(token)) return;
       apply(d);
     }).catch(() => {}).finally(() => { if (!isStale(token)) setLoading(false); });
   }, [subsidiaryID, selectedPeriod, loadToken]);

@@ -54,16 +54,16 @@ export default function AssetsCard({ onPress }: { onPress: () => void }) {
     const done = () => { if (!isStale(token) && --pending <= 0) setLoading(false); };
 
     GetAssetsSummary(filter).then((d) => {
-      if (isStale(token)) return;
       const row = Array.isArray(d) ? d[0] : d;
       summaryCache.set(ck, row);
+      if (isStale(token)) return;
       applySum(row);
     }).catch(() => {}).finally(done);
 
     GetAssetsDepreciationTrend(filter).then((d) => {
-      if (isStale(token)) return;
       const rows = Array.isArray(d) ? d : [];
       trendCache.set(ck, rows);
+      if (isStale(token)) return;
       applyTrend(rows);
     }).catch(() => {}).finally(done);
   }, [subsidiaryID, selectedPeriod, loadToken]);

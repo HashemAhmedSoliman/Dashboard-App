@@ -42,8 +42,8 @@ export default function HRCard({ onPress }: { onPress: () => void }) {
     } else {
       setLoading(true);
       GetHRDashboard(filter).then((d) => {
-        if (isStale(token)) return;
         cache.set(ck, d);
+        if (isStale(token)) return;
         apply(d);
       }).catch(() => {}).finally(() => { if (!isStale(token)) setLoading(false); });
     }
@@ -53,10 +53,10 @@ export default function HRCard({ onPress }: { onPress: () => void }) {
       setPayroll(payrollCache.get(ck) ?? 0);
     } else {
       GetHRDashboardPayroll(filter).then((d) => {
-        if (isStale(token)) return;
         const rows = Array.isArray(d) ? d : [];
         const total = rows.reduce((acc: number, r: any) => acc + n(r?.netpayroll ?? r?.NetPayroll), 0);
         payrollCache.set(ck, total);
+        if (isStale(token)) return;
         setPayroll(total);
       }).catch(() => {});
     }

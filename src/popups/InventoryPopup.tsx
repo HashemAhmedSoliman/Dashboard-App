@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
 import BasePopup from './BasePopup';
@@ -19,6 +19,7 @@ export default function InventoryPopup({ visible, onClose }: { visible: boolean;
   const { subsidiaryID, selectedPeriod, currencyPrecision } = useApp();
   const [data, setData]       = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const fetchId = useRef(0);
   const [trendIn,  setTrendIn]  = useState<number[]>([]);
   const [trendOut, setTrendOut] = useState<number[]>([]);
   const [trendLbls,setTrendLbls]= useState<string[]>([]);
@@ -28,10 +29,11 @@ export default function InventoryPopup({ visible, onClose }: { visible: boolean;
     const ck = `${subsidiaryID}-${selectedPeriod}`;
     if (cache.has(ck)) { apply(cache.get(ck)); return; }
     setLoading(true);
+    const id = ++fetchId.current;
     GetInventoryDashboardPopup({ SubsidiaryID: subsidiaryID, FilterType: selectedPeriod })
-      .then((d) => { cache.set(ck, d); apply(d); })
-      .catch(() => {}).finally(() => setLoading(false));
-  }, [visible, selectedPeriod]);
+      .then((d) => { cache.set(ck, d); if (fetchId.current !== id) return; apply(d); })
+      .catch(() => {}).finally(() => { if (fetchId.current === id) setLoading(false); });
+  }, [visible, subsidiaryID, selectedPeriod]);
 
   const apply = (d: any) => {
     setData(d);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
 import BasePopup from './BasePopup';
@@ -21,6 +21,7 @@ export default function SalesPopup({ visible, onClose }: { visible: boolean; onC
   const { subsidiaryID, selectedPeriod, currencyPrecision } = useApp();
   const [data, setData]       = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const fetchId = useRef(0);
   const [trendData, setTrendData] = useState<{ value: number; label?: string }[]>([]);
 
   useEffect(() => {
@@ -32,11 +33,12 @@ export default function SalesPopup({ visible, onClose }: { visible: boolean; onC
       return;
     }
     setLoading(true);
+    const id = ++fetchId.current;
     GetNetSalesPopupDetails({ SubsidiaryID: subsidiaryID, FilterType: selectedPeriod })
-      .then((d) => { cache.set(ck, d); setData(d); buildTrend(d); })
+      .then((d) => { cache.set(ck, d); if (fetchId.current !== id) return; setData(d); buildTrend(d); })
       .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [visible, selectedPeriod]);
+      .finally(() => { if (fetchId.current === id) setLoading(false); });
+  }, [visible, subsidiaryID, selectedPeriod]);
 
   const buildTrend = (d: any) => {
     const rows = d?.trend ?? [];

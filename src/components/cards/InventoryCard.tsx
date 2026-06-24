@@ -43,9 +43,9 @@ export default function InventoryCard({ onPress }: { onPress: () => void }) {
     }
 
     GetInventoryMovementLast7Days(filter).then((d) => {
-      if (isStale(token)) return;
       const rows = Array.isArray(d) ? d : [];
       movementCache.set(ck, rows);
+      if (isStale(token)) return;
       applyMovement(rows);
     }).catch(() => {});
   }, [subsidiaryID, selectedPeriod, loadToken]);

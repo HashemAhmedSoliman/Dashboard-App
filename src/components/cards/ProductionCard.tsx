@@ -51,16 +51,16 @@ export default function ProductionCard({ onPress }: { onPress: () => void }) {
     const done = () => { if (!isStale(token) && --pending <= 0) setLoading(false); };
 
     GetProductionSummary(filter).then((d) => {
-      if (isStale(token)) return;
       const row = Array.isArray(d) ? d[0] : d;
       summaryCache.set(ck, row);
+      if (isStale(token)) return;
       applySum(row);
     }).catch(() => {}).finally(done);
 
     GetProductionTrend(filter).then((d) => {
-      if (isStale(token)) return;
       const rows = Array.isArray(d) ? d : [];
       trendCache.set(ck, rows);
+      if (isStale(token)) return;
       applyTrend(rows);
     }).catch(() => {}).finally(done);
   }, [subsidiaryID, selectedPeriod, loadToken]);

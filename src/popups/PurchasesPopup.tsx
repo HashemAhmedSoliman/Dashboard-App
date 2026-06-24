@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
 import BasePopup from './BasePopup';
@@ -19,6 +19,7 @@ export default function PurchasesPopup({ visible, onClose }: { visible: boolean;
   const { subsidiaryID, selectedPeriod, currencyPrecision } = useApp();
   const [data, setData]       = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const fetchId = useRef(0);
   const [trendData, setTrend] = useState<{ value: number }[]>([]);
 
   useEffect(() => {
@@ -26,10 +27,11 @@ export default function PurchasesPopup({ visible, onClose }: { visible: boolean;
     const ck = `${subsidiaryID}-${selectedPeriod}`;
     if (cache.has(ck)) { setData(cache.get(ck)); buildTrend(cache.get(ck)); return; }
     setLoading(true);
+    const id = ++fetchId.current;
     GetNetPurchasesPopupDetails({ SubsidiaryID: subsidiaryID, FilterType: selectedPeriod })
-      .then((d) => { cache.set(ck, d); setData(d); buildTrend(d); })
-      .catch(() => {}).finally(() => setLoading(false));
-  }, [visible, selectedPeriod]);
+      .then((d) => { cache.set(ck, d); if (fetchId.current !== id) return; setData(d); buildTrend(d); })
+      .catch(() => {}).finally(() => { if (fetchId.current === id) setLoading(false); });
+  }, [visible, subsidiaryID, selectedPeriod]);
 
   const buildTrend = (d: any) => setTrend((d?.trend ?? []).map((r: any) => ({ value: n(r?.netpurchases) })));
   const fmt = (v: any) => formatNum(n(v), currencyPrecision);
