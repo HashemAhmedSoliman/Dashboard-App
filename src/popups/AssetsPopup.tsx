@@ -49,7 +49,7 @@ export default function AssetsPopup({ visible, onClose }: { visible: boolean; on
   ];
 
   const assetCols: Column[]  = [{ key: 'assetname', label: t('MD_Tbl_Asset'), flex: 2 }, { key: 'netbookvalue', label: t('MD_Tbl_NetValue'), flex: 1, render: (v) => fmt(v) }];
-  const depCols: Column[]    = [{ key: 'assetname', label: t('MD_Tbl_Asset'), flex: 2 }, { key: 'depreciationamount', label: t('MD_MonthDepreciation'), flex: 1, render: (v) => fmt(v) }];
+  const depCols: Column[]    = [{ key: 'assetname', label: t('MD_Tbl_Asset'), flex: 2 }, { key: 'accumulateddep', label: t('MD_MonthDepreciation'), flex: 1, render: (v) => fmt(v) }];
   const typeCols: Column[]   = [{ key: 'typename', label: t('MD_Tbl_Type'), flex: 2 }, { key: 'assetscount', label: t('MD_Tbl_AssetsCount'), flex: 1 }, { key: 'netbookvalue', label: t('MD_Tbl_NetValue'), flex: 1, render: (v) => fmt(v) }];
   const maintCols: Column[]  = [{ key: 'assetname', label: t('MD_Tbl_Asset'), flex: 2 }, { key: 'duedate', label: t('MD_Tbl_DueDate'), flex: 1, render: (v) => formatShortDate(v) }, { key: 'expectedcost', label: t('MD_Tbl_ExpectedCost'), flex: 1, render: (v) => fmt(v) }];
 

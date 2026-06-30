@@ -47,19 +47,19 @@ export default function InventoryPopup({ visible, onClose }: { visible: boolean;
   const s   = data?.summary ?? {};
 
   const kpis: KpiItem[] = [
-    { label: t('MD_KPI_TotalInventoryValue'), value: fmt(s?.totalinventoryvalue), primary: true },
+    { label: t('MD_KPI_TotalInventoryValue'), value: fmt(s?.totalstockvalue),     primary: true },
     { label: t('MD_ActiveItems'),             value: n(s?.activeitemscount).toLocaleString() },
-    { label: t('MD_KPI_BelowMinStock'),       value: n(s?.belowminimumcount).toLocaleString() },
-    { label: t('MD_OutOfStock'),              value: n(s?.outofstockcount).toLocaleString() },
+    { label: t('MD_KPI_BelowMinStock'),       value: n(s?.belowminqtycount).toLocaleString() },
+    { label: t('MD_OutOfStock'),              value: n(s?.zerostockcount).toLocaleString() },
   ];
 
   const topCols: Column[]   = [{ key: 'itemname', label: t('MD_Tbl_Item'), flex: 2 }, { key: 'totalvalue', label: t('MD_Tbl_Value'), flex: 1, render: (v) => fmt(v) }];
   const storeCols: Column[]  = [{ key: 'storename', label: t('MD_Tbl_Store'), flex: 2 }, { key: 'totalvalue', label: t('MD_Tbl_Value'), flex: 1, render: (v) => fmt(v) }];
-  const lowCols: Column[]   = [{ key: 'itemname', label: t('MD_Tbl_Item'), flex: 2 }, { key: 'currentstock', label: t('MD_Tbl_Available'), flex: 1 }, { key: 'minimumstock', label: t('MD_Tbl_MinStock'), flex: 1 }];
+  const lowCols: Column[]   = [{ key: 'itemname', label: t('MD_Tbl_Item'), flex: 2 }, { key: 'availableqty', label: t('MD_Tbl_Available'), flex: 1 }, { key: 'minqty', label: t('MD_Tbl_MinStock'), flex: 1 }];
   const stockCountCols: Column[] = [
-    { key: 'stockcountno', label: t('MD_Tbl_StockCountNo'), flex: 1 },
+    { key: 'stocktakeno',  label: t('MD_Tbl_StockCountNo'), flex: 1 },
     { key: 'storename',    label: t('MD_Tbl_Store'),        flex: 2 },
-    { key: 'countdate',    label: t('MD_Tbl_Date'),         flex: 1, render: (v) => formatShortDate(v) },
+    { key: 'stocktakedate',label: t('MD_Tbl_Date'),         flex: 1, render: (v) => formatShortDate(v) },
   ];
 
   return (
@@ -71,7 +71,7 @@ export default function InventoryPopup({ visible, onClose }: { visible: boolean;
         </SectionCard>
       )}
       <SectionCard title={t('MD_Pop_LowStockItems')}>{data?.belowmin?.length ? <DataTable columns={lowCols} data={data.belowmin} accent={ACCENT} /> : <EmptyState message={t('MD_Empty_NoLowStock')} />}</SectionCard>
-      <SectionCard title={t('MD_Pop_Top5AssetsByValue')}>{data?.topbyvalue?.length ? <DataTable columns={topCols} data={data.topbyvalue} accent={ACCENT} /> : <EmptyState message={t('MD_Empty_NoData')} />}</SectionCard>
+      <SectionCard title={t('MD_Pop_Top5ItemsByValue')}>{data?.topbyvalue?.length ? <DataTable columns={topCols} data={data.topbyvalue} accent={ACCENT} /> : <EmptyState message={t('MD_Empty_NoData')} />}</SectionCard>
       <SectionCard title={t('MD_Pop_StockByStore')}>{data?.storedistrib?.length ? <DataTable columns={storeCols} data={data.storedistrib} accent={ACCENT} /> : <EmptyState message={t('MD_Empty_NoData')} />}</SectionCard>
       <SectionCard title={t('MD_Pop_LastStockCounts')}>{data?.recentstocktk?.length ? <DataTable columns={stockCountCols} data={data.recentstocktk} accent={ACCENT} /> : <EmptyState message={t('MD_Empty_NoStockCounts')} />}</SectionCard>
     </BasePopup>

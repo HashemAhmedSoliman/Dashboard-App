@@ -20,9 +20,10 @@ export default function FinancialPopup({ visible, onClose }: { visible: boolean;
   const [data, setData]     = useState<any>(null);
   const [loading, setLoading]= useState(false);
   const fetchId = useRef(0);
-  const [trendRev, setRev]  = useState<number[]>([]);
-  const [trendExp, setExp]  = useState<number[]>([]);
-  const [trendLbls,setLbls] = useState<string[]>([]);
+  const [trendRev, setRev]    = useState<number[]>([]);
+  const [trendExp, setExp]    = useState<number[]>([]);
+  const [trendLbls, setLbls]  = useState<string[]>([]);
+  const [totalCash, setTotalCash] = useState(0);
 
   useEffect(() => {
     if (!visible) return;
@@ -41,21 +42,23 @@ export default function FinancialPopup({ visible, onClose }: { visible: boolean;
     setLbls(rows.map((r: any) => r?.periodlabel ?? ''));
     setRev(rows.map((r: any) => n(r?.revenue)));
     setExp(rows.map((r: any) => n(r?.expenses)));
+    setTotalCash((d?.cashandbanks ?? []).reduce((acc: number, r: any) => acc + n(r?.balance), 0));
   };
 
   const fmt = (v: any) => formatNum(n(v), currencyPrecision);
   const s   = data?.summary ?? {};
 
   const kpis: KpiItem[] = [
-    { label: t('MD_KPI_NetProfit'),  value: fmt(s?.netprofit),        primary: true },
+    { label: t('MD_KPI_NetProfit'),  value: fmt(s?.netprofit),  primary: true },
     { label: t('MD_KPI_Revenues'),   value: fmt(s?.revenue) },
     { label: t('MD_KPI_Expenses'),   value: fmt(s?.expenses) },
-    { label: t('MD_Cash'),           value: fmt(s?.liquidity) },
+    { label: t('MD_Cash'),           value: fmt(totalCash) },
   ];
 
-  const acctCols: Column[]   = [{ key: 'accountname', label: t('MD_Tbl_AccountName'), flex: 2 }, { key: 'amount', label: t('MD_Tbl_Amount'), flex: 1, render: (v) => fmt(v) }];
-  const partyCols: Column[]  = [{ key: 'name', label: t('MD_Tbl_Name'), flex: 2 }, { key: 'balance', label: t('MD_Tbl_Balance'), flex: 1, render: (v) => fmt(v) }];
-  const cashCols: Column[]   = [{ key: 'name', label: t('MD_Tbl_Name'), flex: 2 }, { key: 'type', label: t('MD_Tbl_Type'), flex: 1 }, { key: 'balance', label: t('MD_Tbl_Balance'), flex: 1, render: (v) => fmt(v) }];
+  const acctCols: Column[]     = [{ key: 'accountname', label: t('MD_Tbl_AccountName'), flex: 2 }, { key: 'amount', label: t('MD_Tbl_Amount'), flex: 1, render: (v) => fmt(v) }];
+  const debtorCols: Column[]   = [{ key: 'customername', label: t('MD_Tbl_Name'), flex: 2 }, { key: 'balance', label: t('MD_Tbl_Balance'), flex: 1, render: (v) => fmt(v) }];
+  const creditorCols: Column[]  = [{ key: 'vendorname', label: t('MD_Tbl_Name'), flex: 2 }, { key: 'balance', label: t('MD_Tbl_Balance'), flex: 1, render: (v) => fmt(v) }];
+  const cashCols: Column[]     = [{ key: 'accountname', label: t('MD_Tbl_AccountName'), flex: 2 }, { key: 'accounttype', label: t('MD_Tbl_Type'), flex: 1 }, { key: 'balance', label: t('MD_Tbl_Balance'), flex: 1, render: (v) => fmt(v) }];
 
   return (
     <BasePopup visible={visible} onClose={onClose} title={t('MD_Pop_Financial_Title')} subtitle={t('MD_Pop_Financial_Sub')} icon="💰" accent={ACCENT} accentDark={ACCENT_DARK} loading={loading}>
@@ -67,8 +70,8 @@ export default function FinancialPopup({ visible, onClose }: { visible: boolean;
       )}
       <SectionCard title={t('MD_Pop_Top5RevenueAccts')}>{data?.toprevenueaccounts?.length ? <DataTable columns={acctCols} data={data.toprevenueaccounts} accent={ACCENT} /> : <EmptyState message={t('MD_Empty_NoData')} />}</SectionCard>
       <SectionCard title={t('MD_Pop_Top5ExpenseAccts')}>{data?.topexpenseaccounts?.length ? <DataTable columns={acctCols} data={data.topexpenseaccounts} accent={ACCENT} /> : <EmptyState message={t('MD_Empty_NoData')} />}</SectionCard>
-      <SectionCard title={t('MD_Pop_Top5Receivables')}>{data?.topcustomers?.length ? <DataTable columns={partyCols} data={data.topcustomers} accent={ACCENT} /> : <EmptyState message={t('MD_Empty_NoData')} />}</SectionCard>
-      <SectionCard title={t('MD_Pop_Top5Payables')}>{data?.topvendors?.length ? <DataTable columns={partyCols} data={data.topvendors} accent={ACCENT} /> : <EmptyState message={t('MD_Empty_NoData')} />}</SectionCard>
+      <SectionCard title={t('MD_Pop_Top5Receivables')}>{data?.topcustomers?.length ? <DataTable columns={debtorCols} data={data.topcustomers} accent={ACCENT} /> : <EmptyState message={t('MD_Empty_NoData')} />}</SectionCard>
+      <SectionCard title={t('MD_Pop_Top5Payables')}>{data?.topvendors?.length ? <DataTable columns={creditorCols} data={data.topvendors} accent={ACCENT} /> : <EmptyState message={t('MD_Empty_NoData')} />}</SectionCard>
       <SectionCard title={t('MD_Pop_CashDistribution')}>{data?.cashandbanks?.length ? <DataTable columns={cashCols} data={data.cashandbanks} accent={ACCENT} /> : <EmptyState message={t('MD_Empty_NoData')} />}</SectionCard>
     </BasePopup>
   );
